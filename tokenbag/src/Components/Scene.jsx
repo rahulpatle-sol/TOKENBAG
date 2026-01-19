@@ -1,86 +1,59 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Box, PerspectiveCamera, Stars, MeshWobbleMaterial } from '@react-three/drei';
-import { useRef, useEffect } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Float, MeshDistortMaterial, Sphere, PerspectiveCamera, Stars } from '@react-three/drei';
+import { useRef } from 'react';
+import * as THREE from 'three';
 
-gsap.registerPlugin(ScrollTrigger);
-
-const DataPacket = ({ position, color }) => {
-  const packetRef = useRef();
+const FloatingNode = ({ position, color, speed, distort }) => {
+  const mesh = useRef();
   
+  // Mouse movement follow karne ke liye subtle parallax
   useFrame((state) => {
-    packetRef.current.rotation.x += 0.02;
-    packetRef.current.rotation.z += 0.01;
+    const t = state.clock.getElapsedTime();
+    mesh.current.position.y = position[1] + Math.sin(t * speed) * 0.2;
+    mesh.current.rotation.x = t * 0.2;
+    mesh.current.rotation.z = t * 0.1;
   });
 
   return (
-    <Float speed={10} rotationIntensity={2} floatIntensity={5}>
-      <Box ref={packetRef} position={position} args={[0.2, 0.2, 0.2]}>
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={5} />
-      </Box>
+    <Float speed={2} rotationIntensity={1.5} floatIntensity={2}>
+      <Sphere ref={mesh} args={[1, 64, 64]} position={position}>
+        <MeshDistortMaterial
+          color={color}
+          speed={speed}
+          distort={distort}
+          radius={1}
+          emissive={color}
+          emissiveIntensity={0.5}
+          metalness={0.8}
+          roughness={0.2}
+          transparent
+          opacity={0.8}
+        />
+      </Sphere>
     </Float>
-  );
-};
-
-const SecureBagModel = () => {
-  const topCover = useRef();
-  const bottomPart = useRef();
-  const packetsGroup = useRef();
-
-  useEffect(() => {
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: "body",
-        start: "top top",
-        end: "30% center",
-        scrub: 1,
-      }
-    });
-
-    // 1. Bag Khulna (Top part moves up, Bottom moves down)
-    tl.to(topCover.current.position, { y: 2.5, duration: 1 }, 0)
-      .to(bottomPart.current.position, { y: -1.5, duration: 1 }, 0)
-      // 2. Packets ka bahar nikalna (Scaling and flying)
-      .to(packetsGroup.current.scale, { x: 1, y: 1, z: 1, duration: 1 }, 0.5)
-      .to(packetsGroup.current.position, { z: 2, duration: 1 }, 0.5);
-  }, []);
-
-  return (
-    <group>
-      {/* BAG TOP COVER */}
-      <Box ref={topCover} args={[3, 0.5, 2]} position={[0, 0.3, 0]}>
-        <meshStandardMaterial color="#111" metalness={0.8} roughness={0.2} />
-      </Box>
-
-      {/* BAG BOTTOM PART */}
-      <Box ref={bottomPart} args={[3, 1.5, 2]} position={[0, -0.7, 0]}>
-        <meshStandardMaterial color="#050505" metalness={0.9} roughness={0.1} />
-        {/* Glow inside the bag */}
-        <pointLight position={[0, 0.5, 0]} color="#22c55e" intensity={5} distance={3} />
-      </Box>
-
-      {/* FLOATING DATA PACKETS (Inside the bag, hidden initially) */}
-      <group ref={packetsGroup} scale={[0, 0, 0]}>
-        <DataPacket position={[0.5, 1, 0.5]} color="#22c55e" />
-        <DataPacket position={[-0.8, 1.5, -0.5]} color="#22c55e" />
-        <DataPacket position={[1.2, 0.8, -0.2]} color="#a855f7" /> {/* Purple Packet */}
-        <DataPacket position={[-0.5, 2, 0.8]} color="#ffffff" />
-      </group>
-    </group>
   );
 };
 
 export const Scene = () => {
   return (
-    <div className="fixed inset-0 z-0 bg-[#020202]">
+    <div className="absolute inset-0 z-0">
       <Canvas>
         <PerspectiveCamera makeDefault position={[0, 0, 8]} />
-        <ambientLight intensity={0.2} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 10, 10]} intensity={1.5} color="#3b82f6" />
+        <spotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} intensity={1} color="#a855f7" />
         
-        <Stars radius={100} depth={50} count={2000} factor={4} saturation={0} fade />
-        <SecureBagModel />
+        {/* Background Stars for Depth */}
+        <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+
+        {/* 3 Main Nodes representing Fast, Share, Secure */}
+        <FloatingNode position={[-4, 2, -2]} color="#3b82f6" speed={2} distort={0.4} /> {/* Blue */}
+        <FloatingNode position={[4, -2, -3]} color="#22c55e" speed={1.5} distort={0.5} /> {/* Green */}
+        <FloatingNode position={[0, -3, -1]} color="#a855f7" speed={2.5} distort={0.3} /> {/* Purple */}
+
+        {/* Subtle Fog for Premium Look */}
+        <color attach="background" args={['#020202']} />
+        <fog attach="fog" args={['#020202', 5, 15]} />
       </Canvas>
     </div>
   );

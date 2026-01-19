@@ -1,16 +1,30 @@
-# React + Vite
+# 🎒 TokenBag v2 - Secure AI Node Sharing
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TokenBag is a decentralized-style AI compute sharing platform. Create secure "Bags" of tokens and share them with your team or friends without exposing your master API keys.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## React Compiler
+## ⚡ Features
+- **Secure Vaults:** Store and manage multiple AI nodes.
+- **Anonymous Access:** Use AI without creating an account (via Bag IDs).
+- **Real-time Chat:** Persisted chat history via Supabase.
+- **Hacker Aesthetic:** Ultra-modern dark UI with Framer Motion.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Tech Stack
+- **Frontend:** React.js, Tailwind CSS, Lucide Icons
+- **Backend:** Node.js, Express, Axios
+- **Database:** Supabase (PostgreSQL)
+- **Auth:** Google OAuth via Supabase
 
-## Expanding the ESLint configuration
+## 🚀 Installation
+1. Clone the repo: `git clone https://github.com/your-username/tokenbag.git`
+2. Install deps: `npm install`
+3. Setup `.env`:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_BACKEND_URL`
+4. Run: `npm run dev`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🔒 Protocol
+Encryption: RSA-256
+Handshake: JWT + Supabase Auth
